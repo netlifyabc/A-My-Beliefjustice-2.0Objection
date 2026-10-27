@@ -1,0 +1,3081 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>执行和解及执行案件最终结算协议</title>
+<style>
+
+/* =========================================================
+   01. 全局变量
+   ========================================================= */
+
+:root {
+
+    --font-body:
+        "FangSong",
+        "仿宋",
+        "FangSong_GB2312",
+        "仿宋_GB2312",
+        "STFangsong",
+        "Noto Serif CJK SC",
+        "Source Han Serif SC",
+        "STSong",
+        serif;
+
+    --font-title:
+        "STZhongsong",
+        "方正小标宋简体",
+        "FZXiaoBiaoSong-B05S",
+        "Noto Serif CJK SC",
+        "Source Han Serif SC",
+        "SimSun",
+        serif;
+
+    --font-heading:
+        "SimHei",
+        "黑体",
+        "Microsoft YaHei",
+        "Noto Sans CJK SC",
+        sans-serif;
+
+    --font-sans:
+        "Microsoft YaHei",
+        "微软雅黑",
+        "PingFang SC",
+        "Noto Sans CJK SC",
+        sans-serif;
+
+    --text:
+        #111111;
+
+    --paper:
+        #ffffff;
+
+    --screen-bg:
+        #e9e9e7;
+
+    --accent:
+        #6f2d2d;
+
+    --page-width:
+        210mm;
+
+    --page-height:
+        297mm;
+
+    --page-top:
+        24mm;
+
+    --page-bottom:
+        20mm;
+
+    --page-left:
+        27mm;
+
+    --page-right:
+        27mm;
+
+    --footer-height:
+        6mm;
+}
+
+
+/* =========================================================
+   02. RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    margin: 0;
+    padding: 0;
+    background: var(--screen-bg);
+    overflow-x: hidden;
+}
+
+body {
+    margin: 0;
+    padding: 12mm 0;
+
+    color: var(--text);
+    background: var(--screen-bg);
+
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.72;
+    font-weight: 400;
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+
+/* =========================================================
+   03. 编辑工具栏
+   ========================================================= */
+
+.editor-toolbar {
+
+    position: fixed;
+
+    top: 18px;
+    left: 18px;
+
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 6px;
+
+    border: 1px solid rgba(0,0,0,.16);
+    border-radius: 4px;
+
+    background: rgba(35,35,35,.96);
+
+    box-shadow:
+        0 4px 16px rgba(0,0,0,.16);
+
+    font-family: var(--font-sans);
+}
+
+.editor-button {
+
+    height: 34px;
+
+    padding: 0 11px;
+
+    border: none;
+    border-radius: 3px;
+
+    background: #ffffff;
+    color: #222222;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.editor-button:hover {
+    background: #eeeeee;
+}
+
+.editor-button.primary {
+    background: #5f2525;
+    color: #ffffff;
+}
+
+.editor-button.primary:hover {
+    background: #4d1d1d;
+}
+
+.editor-status {
+
+    padding: 0 7px;
+
+    color: #d6d6d6;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   04. 编辑状态
+   ========================================================= */
+
+body.editable-mode .editable-content {
+
+    outline:
+        1px dashed rgba(111,45,45,.25);
+
+    outline-offset: 2px;
+
+    cursor: text;
+}
+
+body.editable-mode .editable-content:hover {
+
+    background:
+        rgba(111,45,45,.025);
+}
+
+body.editable-mode .editable-content:focus {
+
+    outline:
+        1px solid rgba(111,45,45,.42);
+
+    background:
+        #fffdfc;
+}
+
+
+/* =========================================================
+   05. A4 页面
+   ========================================================= */
+
+.page {
+
+    position: relative;
+
+    width: var(--page-width);
+    height: var(--page-height);
+
+    min-height: var(--page-height);
+
+    margin:
+        0 auto 12mm;
+
+    padding:
+        var(--page-top)
+        var(--page-right)
+        calc(var(--page-bottom) + var(--footer-height))
+        var(--page-left);
+
+    background: var(--paper);
+
+    box-shadow:
+        0 3px 18px rgba(0,0,0,.07);
+
+    overflow: hidden;
+
+    page-break-after: always;
+    break-after: page;
+}
+
+.page:last-child {
+
+    margin-bottom: 0;
+
+    page-break-after: auto;
+    break-after: auto;
+}
+
+
+/* =========================================================
+   06. 页眉
+   ========================================================= */
+
+.legal-header {
+
+    padding-bottom: 5px;
+
+    border-bottom:
+        0.6px solid #a6a6a6;
+}
+
+.legal-header-top {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    color: #777777;
+
+    font-family:
+        Arial,
+        var(--font-sans);
+
+    font-size: 6px;
+
+    line-height: 1.2;
+
+    letter-spacing: .6px;
+}
+
+.legal-header-top .right {
+
+    color: #777777;
+
+    letter-spacing: .3px;
+
+    text-align: right;
+}
+
+
+/* =========================================================
+   07. 标题
+   ========================================================= */
+
+.document-title {
+
+    margin-top: 12mm;
+
+    text-align: center;
+}
+
+.document-title h1 {
+
+    margin: 0;
+
+    color: #111111;
+
+    font-family: var(--font-title);
+
+    font-size: 24px;
+
+    line-height: 1.4;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    text-indent: 2px;
+}
+
+.document-title .subtitle {
+
+    margin-top: 7px;
+
+    color: #888888;
+
+    font-family:
+        Arial,
+        var(--font-sans);
+
+    font-size: 6px;
+
+    line-height: 1;
+
+    letter-spacing: 1.3px;
+}
+
+
+/* =========================================================
+   08. 当事人
+   ========================================================= */
+
+.party-box {
+
+    margin:
+        11mm 0 8mm;
+
+    padding: 0;
+
+    break-inside: avoid;
+}
+
+.party-block {
+
+    margin:
+        0 0 7px;
+
+    padding: 0;
+
+    break-inside: avoid;
+}
+
+.party-block:last-child {
+    margin-bottom: 0;
+}
+
+.party-name {
+
+    margin: 0;
+    padding: 0;
+
+    color: #111111;
+
+    font-family: var(--font-body);
+
+    font-size: 16px;
+
+    line-height: 1.72;
+
+    font-weight: 700;
+}
+
+.party-detail {
+
+    margin: 0;
+    padding: 0;
+
+    color: #111111;
+
+    font-family: var(--font-body);
+
+    font-size: 15px;
+
+    line-height: 1.72;
+
+    overflow-wrap: break-word;
+}
+
+
+/* =========================================================
+   09. 鉴于
+   ========================================================= */
+
+.whereas-title {
+
+    margin:
+        8px 0 5px;
+
+    color: #111111;
+
+    font-family: var(--font-heading);
+
+    font-size: 16px;
+
+    line-height: 1.6;
+
+    font-weight: 700;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   10. 正文
+   ========================================================= */
+
+p {
+
+    margin:
+        5px 0;
+
+    color: var(--text);
+
+    font-family: var(--font-body);
+
+    font-size: 16px;
+
+    line-height: 1.72;
+
+    font-weight: 400;
+
+    text-align: justify;
+
+    text-justify: inter-ideograph;
+
+    text-indent: 2em;
+
+    overflow-wrap: break-word;
+}
+
+.no-indent {
+    text-indent: 0;
+}
+
+.center {
+
+    text-align: center;
+
+    text-indent: 0;
+}
+
+.right-align {
+
+    text-align: right;
+
+    text-indent: 0;
+}
+
+
+/* =========================================================
+   11. 条款
+   ========================================================= */
+
+.section {
+
+    margin-top: 10px;
+}
+
+.section-title {
+
+    display: flex;
+
+    align-items: baseline;
+
+    margin:
+        11px 0 5px;
+
+    padding: 0;
+
+    color: #111111;
+
+    font-family: var(--font-heading);
+
+    font-size: 16px;
+
+    line-height: 1.6;
+
+    font-weight: 700;
+
+    break-after: avoid;
+
+    page-break-after: avoid;
+}
+
+.section-number {
+
+    margin-right: 5px;
+
+    color: #111111;
+
+    font-family: var(--font-heading);
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    flex: 0 0 auto;
+}
+
+
+/* =========================================================
+   12. 二级标题
+   ========================================================= */
+
+.sub-title {
+
+    margin:
+        7px 0 3px;
+
+    color: #222222;
+
+    font-family: var(--font-heading);
+
+    font-size: 15px;
+
+    line-height: 1.55;
+
+    font-weight: 700;
+
+    text-indent: 0;
+}
+
+
+/* =========================================================
+   13. 强调
+   ========================================================= */
+
+.strong {
+    font-weight: 700;
+}
+
+.red {
+
+    color: var(--accent);
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   14. 重点说明
+   ========================================================= */
+
+.position-box {
+
+    margin:
+        7px 0;
+
+    padding:
+        5px 10px;
+
+    background: transparent;
+
+    border-left:
+        1.5px solid #777777;
+
+    break-inside: avoid;
+}
+
+.position-label {
+
+    margin-bottom: 2px;
+
+    color: #333333;
+
+    font-family: var(--font-heading);
+
+    font-size: 12px;
+
+    line-height: 1.45;
+
+    font-weight: 700;
+}
+
+.position-text {
+
+    color: #222222;
+
+    font-family: var(--font-body);
+
+    font-size: 15px;
+
+    line-height: 1.65;
+
+    overflow-wrap: break-word;
+}
+
+
+/* =========================================================
+   15. 金额
+   ========================================================= */
+
+.amount {
+
+    margin:
+        8px 0;
+
+    padding:
+        4px 0;
+
+    text-align: center;
+
+    color: #111111;
+
+    font-family: var(--font-body);
+
+    font-size: 18px;
+
+    line-height: 1.45;
+
+    font-weight: 700;
+
+    break-inside: avoid;
+}
+
+.amount-label {
+
+    margin-right: 5px;
+
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   16. 计算
+   ========================================================= */
+
+.calculation {
+
+    margin:
+        7px 0;
+
+    padding:
+        5px 9px;
+
+    background: transparent;
+
+    border-top:
+        0.6px solid #aaa;
+
+    border-bottom:
+        0.6px solid #aaa;
+
+    text-align: center;
+
+    color: #222222;
+
+    font-family: var(--font-body);
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+    font-weight: 600;
+
+    break-inside: avoid;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   17. 证据
+   ========================================================= */
+
+.evidence {
+
+    margin: 7px 0;
+
+    border:
+        0.6px solid #aaa;
+
+    background: #ffffff;
+
+    break-inside: avoid;
+}
+
+.evidence-title {
+
+    padding:
+        4px 8px;
+
+    border-bottom:
+        0.6px solid #aaa;
+
+    color: #333333;
+
+    font-family: var(--font-heading);
+
+    font-size: 12px;
+
+    line-height: 1.4;
+
+    font-weight: 700;
+}
+
+.evidence-content {
+    padding: 6px 9px;
+}
+
+.evidence-content p {
+
+    margin: 2px 0;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+    text-indent: 0;
+}
+
+
+/* =========================================================
+   18. 时间轴
+   ========================================================= */
+
+.timeline {
+
+    margin: 7px 0;
+
+    border:
+        0.6px solid #aaa;
+
+    background: #ffffff;
+
+    break-inside: avoid;
+}
+
+.timeline-row {
+
+    display: grid;
+
+    grid-template-columns:
+        28mm
+        minmax(0,1fr);
+
+    border-bottom:
+        0.5px solid #d2d2d2;
+}
+
+.timeline-row:last-child {
+    border-bottom: none;
+}
+
+.timeline-date {
+
+    padding:
+        5px 7px;
+
+    color: #222222;
+
+    font-family: var(--font-heading);
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    font-weight: 700;
+}
+
+.timeline-content {
+
+    padding:
+        5px 8px;
+
+    color: #333333;
+
+    font-family: var(--font-body);
+
+    font-size: 13.5px;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   19. 列表
+   ========================================================= */
+
+.legal-list {
+
+    margin:
+        5px 0 7px;
+
+    padding: 0;
+
+    list-style: none;
+}
+
+.legal-list li {
+
+    position: relative;
+
+    margin: 3px 0;
+
+    padding-left: 17px;
+
+    font-family: var(--font-body);
+
+    font-size: 15px;
+
+    line-height: 1.65;
+
+    text-align: justify;
+
+    break-inside: avoid;
+}
+
+.legal-list li::before {
+
+    content: "•";
+
+    position: absolute;
+
+    left: 3px;
+
+    top: 0;
+
+    color: #555555;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   20. 汇总
+   ========================================================= */
+
+.summary-box {
+
+    margin: 7px 0;
+
+    border:
+        0.6px solid #aaa;
+
+    background: #ffffff;
+
+    break-inside: avoid;
+}
+
+.summary-title {
+
+    padding:
+        5px 8px;
+
+    border-bottom:
+        0.6px solid #aaa;
+
+    color: #222222;
+
+    font-family: var(--font-heading);
+
+    font-size: 14px;
+
+    line-height: 1.4;
+
+    font-weight: 700;
+}
+
+.summary-row {
+
+    display: grid;
+
+    grid-template-columns:
+        30mm
+        minmax(0,1fr);
+
+    border-bottom:
+        0.5px solid #d8d8d8;
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+}
+
+.summary-label {
+
+    padding:
+        5px 6px;
+
+    color: #333333;
+
+    font-family: var(--font-heading);
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    font-weight: 700;
+}
+
+.summary-value {
+
+    padding:
+        5px 7px;
+
+    color: #333333;
+
+    font-family: var(--font-body);
+
+    font-size: 13.5px;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   21. 收款账户
+   ========================================================= */
+
+.account-box {
+
+    margin: 7px 0;
+
+    border:
+        0.6px solid #999999;
+
+    background: #ffffff;
+
+    break-inside: avoid;
+}
+
+.account-row {
+
+    display: grid;
+
+    grid-template-columns:
+        27mm
+        minmax(0,1fr);
+
+    min-height: 9mm;
+
+    border-bottom:
+        0.5px solid #d4d4d4;
+}
+
+.account-row:last-child {
+    border-bottom: none;
+}
+
+.account-label {
+
+    display: flex;
+
+    align-items: center;
+
+    padding:
+        4px 7px;
+
+    color: #333333;
+
+    font-family: var(--font-heading);
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.account-value {
+
+    display: flex;
+
+    align-items: center;
+
+    padding:
+        4px 8px;
+
+    color: #222222;
+
+    font-family: var(--font-body);
+
+    font-size: 14px;
+
+    overflow-wrap: anywhere;
+}
+
+.payment-paragraph {
+
+    margin-top: 8px;
+    margin-bottom: 8px;
+
+    line-height: 1.78;
+}
+
+
+/* =========================================================
+   22. 签署
+   ========================================================= */
+
+.signature-section {
+
+    margin-top: 12px;
+
+    break-inside: avoid;
+}
+
+.signature-block {
+
+    margin:
+        11px 0;
+
+    padding: 0;
+
+    font-family: var(--font-body);
+
+    font-size: 14px;
+
+    line-height: 1.7;
+
+    break-inside: avoid;
+}
+
+.signature-company {
+
+    font-family: var(--font-body);
+
+    font-size: 15px;
+
+    line-height: 1.6;
+
+    font-weight: 700;
+}
+
+.signature-line {
+
+    min-height: 25px;
+
+    margin-top: 4px;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+.signature-date {
+
+    margin-top: 4px;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+.signature-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 18mm;
+
+    margin-top: 8px;
+}
+
+
+/* =========================================================
+   23. 远程签署
+   ========================================================= */
+
+.remote-sign {
+
+    margin:
+        8px 0;
+
+    padding:
+        6px 9px;
+
+    border:
+        0.6px solid #aaa;
+
+    background: #ffffff;
+
+    break-inside: avoid;
+}
+
+.remote-sign-title {
+
+    margin-bottom: 3px;
+
+    color: #222222;
+
+    font-family: var(--font-heading);
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   24. 结语
+   ========================================================= */
+
+.closing {
+
+    margin-top: 12px;
+
+    color: #222222;
+
+    font-family: var(--font-body);
+
+    font-size: 16px;
+
+    line-height: 1.6;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    text-align: center;
+
+    break-inside: avoid;
+}
+
+
+/* =========================================================
+   25. 页脚
+   ========================================================= */
+
+.page-footer {
+
+    position: absolute;
+
+    left: var(--page-left);
+    right: var(--page-right);
+
+    bottom: 7mm;
+
+    height: var(--footer-height);
+
+    padding-top: 2px;
+
+    border-top:
+        0.5px solid #d2d2d2;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    color: #999999;
+
+    font-family:
+        Arial,
+        var(--font-sans);
+
+    font-size: 6px;
+
+    line-height: 1.2;
+
+    letter-spacing: .25px;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   26. 通用分页辅助
+   ========================================================= */
+
+.keep-together {
+
+    break-inside: avoid;
+
+    page-break-inside: avoid;
+}
+
+.page-break-before {
+
+    break-before: page;
+
+    page-break-before: always;
+}
+
+
+/* =========================================================
+   27. 第五页专用压缩
+   ========================================================= */
+
+.final-page .section {
+    margin-top: 7px;
+}
+
+.final-page .section-title {
+
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+
+.final-page p {
+
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.final-page .sub-title {
+
+    margin-top: 5px;
+    margin-bottom: 2px;
+}
+
+.final-page .position-box {
+
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.final-page .remote-sign {
+
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.final-page .signature-section {
+    margin-top: 7px;
+}
+
+.final-page .signature-block {
+
+    margin-top: 7px;
+    margin-bottom: 7px;
+}
+
+.final-page .signature-line {
+    min-height: 21px;
+}
+
+.final-page .signature-grid {
+    margin-top: 5px;
+}
+
+.final-page .closing {
+    margin-top: 7px;
+}
+
+
+/* =========================================================
+   28. 屏幕端
+   ========================================================= */
+
+@media screen and (max-width: 800px) {
+
+    html,
+    body {
+
+        width: 100%;
+
+        min-width: 0;
+
+        background: #ededeb;
+
+        overflow-x: hidden;
+    }
+
+    body {
+        padding: 0;
+    }
+
+    .page {
+
+        width: 100%;
+
+        height: auto;
+        min-height: 0;
+
+        margin:
+            0 0 12px;
+
+        padding:
+            28px
+            18px
+            48px;
+
+        box-shadow:
+            0 2px 12px rgba(0,0,0,.07);
+
+        overflow: visible;
+
+        page-break-after: auto;
+        break-after: auto;
+    }
+
+    .document-title {
+        margin-top: 17px;
+    }
+
+    .document-title h1 {
+
+        font-size:
+            clamp(21px,7vw,24px);
+
+        letter-spacing:
+            clamp(1px,1vw,2px);
+
+        text-indent:
+            clamp(1px,1vw,2px);
+    }
+
+    .party-box {
+
+        margin:
+            24px 0 20px;
+    }
+
+    .party-block {
+        margin-bottom: 8px;
+    }
+
+    .party-name {
+
+        font-size: 15px;
+
+        line-height: 1.7;
+    }
+
+    .party-detail {
+
+        font-size: 14px;
+
+        line-height: 1.7;
+    }
+
+    p {
+
+        font-size: 15px;
+
+        line-height: 1.7;
+    }
+
+    .section-title {
+
+        font-size: 15px;
+    }
+
+    .section-number {
+
+        font-size: 15px;
+    }
+
+    .sub-title {
+        font-size: 14px;
+    }
+
+    .position-text {
+        font-size: 14px;
+    }
+
+    .amount {
+        font-size: 16px;
+    }
+
+    .summary-row {
+        grid-template-columns:
+            72px
+            minmax(0,1fr);
+    }
+
+    .timeline-row {
+        grid-template-columns:
+            82px
+            minmax(0,1fr);
+    }
+
+    .account-row {
+        grid-template-columns:
+            78px
+            minmax(0,1fr);
+    }
+
+    .signature-grid {
+
+        grid-template-columns: 1fr;
+
+        gap: 5px;
+    }
+
+    .page-footer {
+
+        position: relative;
+
+        left: auto;
+        right: auto;
+        bottom: auto;
+
+        width: 100%;
+
+        height: auto;
+
+        min-height: 22px;
+
+        margin-top: 25px;
+
+        padding-top: 5px;
+    }
+
+    .editor-toolbar {
+
+        top: 9px;
+
+        left: 9px;
+        right: 9px;
+
+        justify-content: center;
+
+        flex-wrap: wrap;
+    }
+
+    .editor-status {
+        display: none;
+    }
+}
+
+
+/* =========================================================
+   29. 小屏
+   ========================================================= */
+
+@media screen and (max-width: 390px) {
+
+    .page {
+
+        padding:
+            22px
+            14px
+            44px;
+    }
+
+    .party-name {
+        font-size: 14.5px;
+    }
+
+    .party-detail {
+        font-size: 13.5px;
+    }
+
+    .section-title {
+        font-size: 14px;
+    }
+
+    .section-number {
+        font-size: 14px;
+    }
+
+    .signature-line,
+    .signature-date {
+        font-size: 13px;
+    }
+}
+
+
+
+
+
+
+/* =========================================================
+   30. 统一 A4 页面与打印规则
+   目标：屏幕预览与打印尽量一致，减少意外空白
+   ========================================================= */
+
+/*
+ * A4 纸张由 .page 自身控制尺寸及内边距。
+ * 注意：本段之后不再重复定义 @page。
+ */
+@page {
+    size: A4 portrait;
+    margin: 0;
+}
+
+/* 基础环境 */
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    background: var(--screen-bg);
+}
+
+body {
+    padding: 12mm 0;
+    background: var(--screen-bg);
+}
+
+/* =========================================================
+   30.1 A4 页面
+   ========================================================= */
+
+.page {
+    position: relative;
+
+    width: 210mm;
+    height: 297mm;
+    min-height: 297mm;
+    max-height: 297mm;
+
+    margin: 0 auto 12mm;
+
+    padding:
+        24mm
+        27mm
+        26mm
+        27mm;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 3px 18px rgba(0, 0, 0, 0.07);
+
+    /*
+     * 一个 .page 对应一张纸。
+     * 不对每个 .section 设置强制换页。
+     */
+    break-before: auto;
+    page-break-before: auto;
+
+    break-after: page;
+    page-break-after: always;
+
+    /*
+     * 保持既有独立页面布局。
+     * 页面内容不得超出可打印区域。
+     */
+    overflow: hidden;
+}
+
+.page:last-child {
+    margin-bottom: 0;
+
+    break-after: auto;
+    page-break-after: auto;
+}
+
+/* 标题尽量与后续正文保持在一起 */
+.section-title,
+.section h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+}
+
+/* 段落分页控制 */
+p {
+    orphans: 2;
+    widows: 2;
+}
+
+/* 条款自然排列，不强制另起一页 */
+.section {
+    break-before: auto;
+    page-break-before: auto;
+
+    break-after: auto;
+    page-break-after: auto;
+}
+
+/* =========================================================
+   31. 法院落款
+   ========================================================= */
+
+.court-closing {
+    margin: 16px 0 24px;
+    padding: 0;
+
+    text-align: left;
+    line-height: 1.8;
+
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.court-closing p {
+    margin: 0;
+    padding: 0;
+
+    text-align: left;
+    text-indent: 0;
+}
+
+.court-name {
+    margin-top: 4px !important;
+
+    font-size: 13pt;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+/* =========================================================
+   32. 签署区域
+   ========================================================= */
+
+.signature-title {
+    margin-top: 28px;
+    margin-bottom: 24px;
+}
+
+.signature-section {
+    margin-top: 12px;
+}
+
+.signature-block {
+    margin: 11px 0;
+    padding: 0;
+
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.8;
+
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.signature-company {
+    margin-bottom: 12px;
+
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    font-weight: 700;
+}
+
+.signature-line {
+    min-height: 34px;
+    margin-top: 4px;
+    margin-bottom: 10px;
+
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.signature-date {
+    margin-top: 6px;
+
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.signature-gap {
+    height: 24px;
+}
+
+/* =========================================================
+   33. 最后一页适度压缩
+   保留可读性和签字空间
+   ========================================================= */
+
+.final-page .section {
+    margin-top: 7px;
+}
+
+.final-page .section-title {
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+
+.final-page p {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.final-page .sub-title {
+    margin-top: 5px;
+    margin-bottom: 2px;
+}
+
+.final-page .position-box {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.final-page .remote-sign {
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.final-page .signature-section {
+    margin-top: 8px;
+}
+
+.final-page .signature-block {
+    margin-top: 7px;
+    margin-bottom: 7px;
+}
+
+.final-page .signature-company {
+    margin-bottom: 8px;
+}
+
+.final-page .signature-line {
+    min-height: 28px;
+}
+
+.final-page .signature-grid {
+    margin-top: 5px;
+}
+
+.final-page .closing {
+    margin-top: 7px;
+}
+
+/* =========================================================
+   34. 打印专用
+   与屏幕端统一页面尺寸、边距及内容区域
+   ========================================================= */
+
+@media print {
+
+    html,
+    body {
+        width: 210mm;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background: #ffffff !important;
+        overflow: visible !important;
+    }
+
+    .editor-toolbar {
+        display: none !important;
+    }
+
+    /*
+     * 打印页面严格沿用 A4 尺寸。
+     * 不再将页面高度改成 auto。
+     */
+    .page {
+        position: relative !important;
+
+        width: 210mm !important;
+        height: 297mm !important;
+
+        min-height: 297mm !important;
+        max-height: 297mm !important;
+
+        margin: 0 !important;
+
+        padding:
+            24mm
+            27mm
+            26mm
+            27mm !important;
+
+        box-sizing: border-box !important;
+
+        background: #ffffff !important;
+        box-shadow: none !important;
+
+        overflow: hidden !important;
+
+        break-before: auto !important;
+        page-break-before: auto !important;
+
+        break-after: page !important;
+        page-break-after: always !important;
+    }
+
+    .page:last-child {
+        break-after: auto !important;
+        page-break-after: auto !important;
+    }
+
+    /* 取消编辑框 */
+    .editable-content {
+        outline: none !important;
+        background: transparent !important;
+    }
+
+    /* 保留文字和边框颜色 */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* 标题与正文尽量保持在一起 */
+    .section-title,
+    .section h3 {
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+    }
+
+    /* 正文段落允许自然换页 */
+    p {
+        orphans: 2;
+        widows: 2;
+    }
+
+    .section {
+        break-before: auto !important;
+        page-break-before: auto !important;
+
+        break-after: auto !important;
+        page-break-after: auto !important;
+    }
+
+    /*
+     * 第一页：时间轴和重点说明
+     */
+    .page:nth-of-type(1) .timeline-date {
+        padding: 4px 6px;
+        font-size: 11px;
+    }
+
+    .page:nth-of-type(1) .timeline-content {
+        padding: 4px 7px;
+        font-size: 12.5px;
+        line-height: 1.45;
+    }
+
+    .page:nth-of-type(1) p {
+        margin-top: 4px;
+        margin-bottom: 4px;
+        line-height: 1.62;
+    }
+
+    .page:nth-of-type(1) .position-box {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        padding: 4px 8px;
+    }
+
+    .page:nth-of-type(1) .position-text {
+        font-size: 14px;
+        line-height: 1.55;
+    }
+
+    /*
+     * 第四页：适度缩小段落间距
+     */
+    .page:nth-of-type(4) p {
+        margin-top: 4px;
+        margin-bottom: 4px;
+        line-height: 1.62;
+    }
+
+    .page:nth-of-type(4) .section-title {
+        margin-top: 7px;
+        margin-bottom: 4px;
+    }
+
+    /*
+     * 最后一页：只适度压缩，不大幅缩小字体
+     */
+    .final-page {
+        font-size: 15px;
+    }
+
+    .final-page p {
+        font-size: 15px;
+        line-height: 1.58;
+
+        margin-top: 3px;
+        margin-bottom: 3px;
+    }
+
+    .final-page .section-title {
+        font-size: 15px;
+        line-height: 1.45;
+
+        margin-top: 6px;
+        margin-bottom: 3px;
+    }
+
+    .final-page .section-number {
+        font-size: 15px;
+    }
+
+    .final-page .sub-title {
+        font-size: 14px;
+        line-height: 1.4;
+
+        margin-top: 4px;
+        margin-bottom: 2px;
+    }
+
+    .final-page .remote-sign {
+        padding: 4px 7px;
+        margin: 4px 0;
+    }
+
+    .final-page .remote-sign-title {
+        font-size: 12px;
+        margin-bottom: 2px;
+    }
+
+    .final-page .signature-section {
+        margin-top: 8px;
+    }
+
+    .final-page .signature-block {
+        margin-top: 7px;
+        margin-bottom: 7px;
+
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .final-page .signature-company {
+        font-size: 14px;
+        line-height: 1.5;
+
+        margin-bottom: 8px;
+    }
+
+    .final-page .signature-line {
+        min-height: 28px;
+
+        margin-top: 4px;
+        margin-bottom: 6px;
+
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .final-page .signature-date {
+        margin-top: 4px;
+
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .final-page .signature-grid {
+        gap: 12mm;
+        margin-top: 5px;
+    }
+
+    .final-page .closing {
+        margin-top: 6px;
+
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    /*
+     * 页脚始终位于各自 A4 页面底部
+     */
+    .page-footer {
+        position: absolute !important;
+
+        left: 27mm !important;
+        right: 27mm !important;
+        bottom: 7mm !important;
+
+        width: auto !important;
+        height: 6mm !important;
+        min-height: 0 !important;
+
+        margin: 0 !important;
+        padding-top: 2px !important;
+
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: space-between !important;
+    }
+
+    .page-no {
+        display: inline !important;
+    }
+}
+
+/* =========================================================
+   35. 小屏预览
+   只影响屏幕，不改变 A4 打印布局
+   ========================================================= */
+
+@media screen and (max-width: 800px) {
+
+    .page {
+        width: 100%;
+
+        height: auto;
+        min-height: 0;
+        max-height: none;
+
+        margin: 0 0 12px;
+        padding: 28px 18px 48px;
+
+        overflow: visible;
+
+        break-after: auto;
+        page-break-after: auto;
+    }
+
+    .page-footer {
+        position: relative;
+
+        left: auto;
+        right: auto;
+        bottom: auto;
+
+        width: 100%;
+        height: auto;
+        min-height: 22px;
+
+        margin-top: 25px;
+        padding-top: 5px;
+    }
+}
+
+
+
+/* =========================================================
+   第一页专属排版优化
+   仅调整第一页，不影响其他页面
+   ========================================================= */
+
+/* 标题与页眉之间的空间 */
+.page-first .document-title {
+    margin-top: 16mm !important;
+    margin-bottom: 0 !important;
+}
+
+/* 当事人信息区域 */
+.page-first .party-box {
+    margin-top: 15mm !important;
+    margin-bottom: 12mm !important;
+}
+
+/* 当事人各组之间的间距 */
+.page-first .party-block {
+    margin-bottom: 12px !important;
+}
+
+/* 当事人信息行距 */
+.page-first .party-name,
+.page-first .party-detail {
+    line-height: 1.8 !important;
+}
+
+/* =========================================================
+   异议请求整体上移
+   标题及下面三项正文一起移动
+   ========================================================= */
+
+.page-first .section {
+    transform: translateY(-8px) !important;
+}
+
+/* 保持标题与正文之间原有的间距 */
+.page-first .section-title {
+    margin-top: 16px !important;
+    margin-bottom: 10px !important;
+
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+}
+
+/* 保持三项请求的段落间距和行距 */
+.page-first p {
+    margin-top: 9px !important;
+    margin-bottom: 9px !important;
+    line-height: 1.85 !important;
+}
+
+/* =========================================================
+   打印时保持一致
+   ========================================================= */
+
+@media print {
+
+    .page-first .document-title {
+        margin-top: 16mm !important;
+    }
+
+    .page-first .party-box {
+        margin-top: 15mm !important;
+        margin-bottom: 12mm !important;
+    }
+
+    .page-first .party-block {
+        margin-bottom: 12px !important;
+    }
+
+    .page-first .party-name,
+    .page-first .party-detail {
+        line-height: 1.8 !important;
+    }
+
+    .page-first .section {
+        transform: translateY(-8px) !important;
+    }
+
+    .page-first .section-title {
+        margin-top: 16px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .page-first p {
+        margin-top: 9px !important;
+        margin-bottom: 9px !important;
+        line-height: 1.85 !important;
+    }
+} 
+
+
+/* =========================================================
+   第一页：异议请求标题及全部正文整体上移
+   ========================================================= */
+
+.page-first .objection-request-group {
+    position: relative !important;
+    top: -12px !important;
+}
+
+/* 打印时同样上移 */
+@media print {
+    .page-first .objection-request-group {
+        position: relative !important;
+        top: -12px !important;
+    }
+}
+
+
+
+</style> 
+
+</head>
+
+
+<body>
+
+<!-- =========================================================
+     编辑工具栏
+     ========================================================= -->
+
+<div class="editor-toolbar">
+
+    <button
+        type="button"
+        class="editor-button primary"
+        onclick="toggleEditMode()"
+    >
+        ✏ 编辑
+    </button>
+
+    <button
+        type="button"
+        class="editor-button"
+        onclick="saveDocument()"
+    >
+        💾 保存
+    </button>
+
+    <button
+        type="button"
+        class="editor-button"
+        onclick="restoreDocument()"
+    >
+        ↩ 恢复
+    </button>
+
+    <button
+        type="button"
+        class="editor-button"
+        onclick="printDocument()"
+    >
+        🖨 打印
+    </button>
+
+    <span
+        class="editor-status"
+        id="editorStatus"
+    >
+        编辑模式：关闭
+    </span>
+
+</div> 
+
+
+<!-- =========================================================
+     PAGE 01
+     执行异议申请书、当事人信息、异议请求
+     ========================================================= -->
+
+<section class="page page-first">
+
+    <div class="legal-header">
+        <div class="legal-header-top">
+            <span></span>
+        </div>
+    </div>
+
+    <div class="document-title">
+        <h1 class="editable-content">执行异议申请书</h1>
+    </div>
+
+    <div class="party-box">
+
+        <div class="party-block">
+            <div class="party-name editable-content">
+                异议人一（原案被申请执行人）：
+            </div>
+            <div class="party-detail editable-content">
+               性别：女 出生日期：1987年2月4日 民族：汉族 
+            </div>
+            <div class="party-detail editable-content">
+                户籍地址：广东省深圳市南山区高新南一道8号创维大厦A座15楼西
+            </div>
+            <div class="party-detail editable-content">
+                身份证号码：220381198702040827
+            </div>
+        </div>
+
+        <div class="party-block">
+            <div class="party-name editable-content">
+                异议人二（原案被申请执行人）：
+            </div>
+            <div class="party-detail editable-content">
+              性别：女 出生日期：1963年8月9日 民族：汉族 
+            </div>
+            <div class="party-detail editable-content">
+                户籍地址：吉林省四平市铁东区四马路街学府委四组
+            </div>
+            <div class="party-detail editable-content">
+                身份证号码：220319196308090845
+            </div>
+        </div>
+
+        <div class="party-block">
+            <div class="party-name editable-content">
+                申请执行人：深圳市一达通企业服务有限公司
+            </div>
+            <div class="party-detail editable-content">
+                统一社会信用代码：91440300734141160H
+            </div>
+            <div class="party-detail editable-content">
+                住所地：广东省深圳市南山区粤海街道科苑南路（深圳湾段）3239号阿里云大厦S2号楼301
+            </div>
+            <div class="party-detail editable-content">
+                法定代表人：汤红霞
+            </div>
+        </div>
+
+        <div class="party-block">
+            <div class="party-detail editable-content">
+                案号：（2026）粤 0305 执调 11257 号
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 异议请求整体移动容器 -->
+    <div class="objection-request-group">
+
+        <section class="section">
+
+            <h2 class="section-title">
+                <span class="section-number editable-content">一、</span>
+                <span class="editable-content">异议请求</span>
+            </h2>
+
+            <p class="editable-content">
+                1. 请求人民法院依法核减本案执行标的，核实并扣除异议人已经履行的款项。异议人主张剩余本金为人民币39,293.35元。
+            </p>
+
+            <p class="editable-content">
+                2. 请求人民法院依法核定本案执行金额。异议人此前提出以人民币40,138.26元作为本案一次性结算金额，双方后续曾围绕该金额进行协商，但最终因执行和解协议的其他条款及履行安排未能达成一致，未完成协议签署。请求人民法院结合生效法律文书、实际付款及双方协商记录，依法核定本案应执行金额，并纠正超出执行依据范围或者计算错误的部分。
+            </p>
+
+            <p class="editable-content">
+                3. 请求人民法院根据依法核定的执行金额，对超额查封、冻结措施予以相应调整；对已无继续采取执行措施必要的财产，依法解除相应执行措施。
+            </p>
+
+        </section>
+
+    </div>
+
+    <div class="page-footer">
+        <span></span>
+        <span class="page-no">01</span>
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     PAGE 02
+     事实与理由
+     第一项：基础付款责任及已履行款项
+     ========================================================= -->
+
+<section class="page">
+
+    <div class="legal-header">
+        <div class="legal-header-top">
+            <span></span>
+        </div>
+    </div>
+
+    <section class="section">
+
+        <h2 class="section-title">
+            <span class="editable-content">二、事实与理由</span>
+        </h2>
+
+        <h3 class="editable-content">
+            （一）异议人不否认生效调解文书确定的基础付款责任，但已履行大部分付款义务，本次异议针对剩余执行金额的核算
+        </h3>
+
+        <p class="editable-content">
+            本案基础债务源于异议人原公司与申请执行人之间的合同纠纷。2025年4月，双方经调解形成生效法律文书，确定相关付款金额为人民币115,183.97元，其中包括垫付款本金111,325.64元、仲裁费3,525元及公告费333.33元。
+        </p>
+
+        <p class="editable-content">
+            生效调解文书形成后，异议人持续通过实际付款履行相关义务。截至2026年1月26日，异议人累计支付人民币71,991.55元；此后又于2026年4月26日、5月26日分别支付人民币2,399.05元、1,500元。异议人已履行大部分付款义务，并多次向申请执行人发送付款凭证及对账信息，就剩余款项和履行期限进行沟通。
+        </p>
+
+        <p class="editable-content">
+            因此，异议人并不否认生效调解文书确定的基础付款责任，也不存在拒绝履行的意思。本次异议主要针对申请执行人申报的执行金额是否已准确扣除实际付款、相关利息及违约金是否具有执行依据，以及剩余债务的计算是否准确，请求人民法院结合生效法律文书、实际付款凭证及双方往来记录依法审查。
+        </p> 
+
+         <h3 class="editable-content">
+            （二）双方此前对账及异议人后续付款表明，剩余本金应依法核实并扣减
+        </h3>
+
+        <p class="editable-content">
+            2026年1月26日，异议人通过双方此前使用的官方邮件渠道向申请执行人发送对账信息，载明当时剩余应付余额为人民币43,192.40元。2026年3月18日，申请执行人代理人通过邮件回复，同意全部款项于2026年3月底前清偿，并表示逾期将依法申请执行。该邮件与此前对账及双方后续履行安排存在关联，可作为核实双方对账口径的重要证据。
+        </p>
+
+        <p class="editable-content">
+            此后，异议人继续付款：2026年4月26日支付人民币2,399.05元；2026年5月26日支付人民币1,500元。
+        </p>
+
+        <div class="calculation editable-content">
+            43,192.40－2,399.05－1,500＝39,293.35元
+        </div>
+
+        <p class="editable-content">
+            异议人主张，按照上述对账口径，剩余本金为人民币39,293.35元。请求人民法院结合银行流水、付款凭证、双方邮件及生效法律文书，核实各笔付款的抵扣情况，依法扣除已履行款项，避免已付款项被重复计入执行标的。
+        </p>
+
+
+    </section>
+
+    <div class="page-footer">
+        <span></span>
+        <span class="page-no">02</span>
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     PAGE 03
+     事实与理由
+     第二项、第三项：对账及历史违约金
+     ========================================================= -->
+
+<section class="page">
+
+    <div class="legal-header">
+        <div class="legal-header-top">
+            <span></span>
+        </div>
+    </div>
+
+    <section class="section">
+
+       
+        <h3 class="editable-content">
+            （三）原合同项下历史违约金是否属于本案执行债务，应以生效调解文书确定的义务范围为准
+        </h3>
+
+        <p class="editable-content">
+            本案原债务源于异议人原公司与申请执行人之间的合同纠纷，异议人原公司现已注销。
+        </p>
+
+        <p class="editable-content">
+            对于原合同项下的历史违约金是否已纳入调解处理范围，应结合生效调解文书的具体内容、双方调解时对债务的处理情况及相关证据依法认定，不能仅依据原合同中的违约金条款，当然将相关款项追加至本案执行标的。
+        </p>
+
+        <p class="editable-content">
+            调解文书生效后，异议人持续付款，双方亦通过邮件就剩余款项及履行期限进行了多次沟通。请求人民法院结合生效调解文书、双方往来邮件及实际付款凭证，核实申请执行人主张的历史违约金及其他相关款项是否具有执行依据，并依法纠正超出生效法律文书确定范围或者重复计算的执行金额。
+        </p>
+
+         <h3 class="editable-content">
+            （四）人民币40,138.26元系异议人主动提出的核算及一次性协商结算方案，并非对申请执行人全部执行金额的无条件认可
+        </h3>
+
+        <p class="editable-content">
+            2026年8月14日，异议人收到本案执行通知书。2026年8月20日，异议人针对执行金额及相关计算问题向执行法院提交第一份执行异议申请材料。
+        </p>
+
+        <p class="editable-content">
+            在此基础上，异议人结合实际付款情况、此前对账记录及相关款项的计算口径，以剩余本金人民币39,293.35元为基础，按照年利率5.25%、自2026年3月31日起至2026年8月14日止共136天的口径，主动核算资金占用损失人民币844.91元，合计人民币40,138.26元。
+        </p>
+
+        <div class="position-box">
+            <div class="position-label editable-content">
+                协商结算金额构成
+            </div>
+            <div class="position-text editable-content">
+                剩余本金：人民币39,293.35元。
+
+                <br><br>
+
+                资金占用损失：人民币844.91元。
+
+                <br><br>
+
+                合计：人民币40,138.26元。
+            </div>
+        </div>
+
+        <p class="editable-content">
+            2026年9月3日，异议人向申请执行人发送《关于本案协商方案及结算时间的回复函》，明确提出以人民币40,138.26元作为本案一次性协商结算金额，并说明该金额的计算依据与此前提交的执行异议申请材料中的核算口径一致。
+        </p>
+
+        <p class="editable-content">
+            上述金额系异议人主动提出的核算及协商结算方案，旨在结合双方争议情况推动本案一次性解决，并不意味着异议人无条件认可申请执行人申报的全部执行金额、全部违约责任主张或者所有计算方式均符合法律规定。
+        </p>
+
+       
+    </section>
+
+    <div class="page-footer">
+        <span></span>
+        <span class="page-no">03</span>
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     PAGE 04
+     事实与理由
+     第四项：40,138.26元的性质及计算
+     ========================================================= -->
+
+<section class="page">
+
+    <div class="legal-header">
+        <div class="legal-header-top">
+            <span></span>
+        </div>
+    </div>
+
+    <section class="section">
+
+    <p class="editable-content">
+            因此，请求人民法院依法独立审查本案执行依据、实际付款及相关款项计算情况，不因异议人曾提出协商方案而将未经核实的其他款项当然认定为应予执行的债务。
+        </p> 
+
+
+        <h3 class="editable-content">
+            （五）双方曾围绕人民币40,138.26元进行实质性协商，但最终未能完成执行和解协议签署
+        </h3>
+
+        <p class="editable-content">
+            2026年9月1日，异议人向申请执行人发送关于本案执行标的核算及协商处理事宜的正式函告；2026年9月3日，进一步发送《关于本案协商方案及结算时间的回复函》。
+        </p>
+
+        <p class="editable-content">
+            2026年9月7日，异议人代理律师向异议人转述，申请执行人代理人通过电话反馈，公司同意按照异议人提出的金额进行和解，但不承担执行费用。
+        </p>
+
+        <p class="editable-content">
+            此后，双方继续就执行和解的具体履行方式进行沟通。2026年9月10日至9月17日期间，双方围绕异地签署、协议原件寄送、账户解除冻结、款项支付及结案材料提交等事项持续协商。
+        </p>
+
+        <p class="editable-content">
+            2026年9月18日，异议人代理律师再次转述申请执行人方面的意见，即申请执行人希望先收款、后办理账户解封。异议人随即将双方争议情况向执行法院反映，请求法院对后续办理程序予以指导。
+        </p>
+
+        <p class="editable-content">
+            2026年9月24日，异议人向申请执行人发送正式函告，进一步说明执行和解金额及拟议办理流程。2026年9月28日，申请执行人方面又提出协议中的违约责任及保密条款必须保留。
+        </p>
+
+        <p class="editable-content">
+            双方最终未能就协议全部内容及履行安排达成一致，执行和解协议未完成签署。
+        </p>
+
+        <p class="editable-content">
+            上述协商经过表明，双方曾围绕人民币40,138.26元进行实质性协商，但未最终形成并签署完整的执行和解协议。异议人现提出执行异议，并非要求人民法院直接将未签署的协商方案视为已经生效的和解协议，而是请求人民法院依据执行依据、实际付款事实及相关法律规定，依法核查本案具体执行金额。
+        </p>  
+
+    <h3 class="editable-content">
+         （六）双方就执行和解金额及办理方式进行多轮协商，最终未能签署协议，异议人依法提出执行异议 
+    </h3>
+
+    <p class="editable-content">
+        2026年8月14日，异议人收到执行通知书后，于8月20日向执行法院提交第一份执行异议申请材料。8月26日，异议人与执行法官沟通时，法官告知本案可以通过双方协商解决，协商不成的，可以依法通过执行异议程序处理。
+    </p> 
+
+    </section>
+
+    <div class="page-footer">
+        <span></span>
+        <span class="page-no">04</span>
+    </div>
+
+</section>
+
+
+
+
+
+
+<!-- =========================================================
+     PAGE 05
+     事实与理由
+     第五项：协商经过及未签署协议
+     ========================================================= -->
+
+<section class="page">
+
+    <div class="legal-header">
+        <div class="legal-header-top">
+            <span></span>
+        </div>
+    </div>
+
+    <section class="section">
+
+        <p class="editable-content" style="font-size: 16px; margin-top: 10px; margin-bottom: 6px;">
+            <strong>1. 2026年9月1日至9月7日：提出结算金额并获得对方反馈</strong>
+        </p>
+
+        <p class="editable-content">
+            异议人收到执行通知书后，于8月20日提交第一份执行异议申请材料，并于8月26日与执行法官沟通。此后，异议人持续与申请执行人方面协商。9月1日，异议人代理律师发送《关于（2026）粤0305执调11257号案件执行标的核算及协商处理事宜的正式函告》；9月3日，异议人提出以<strong>人民币40,138.26元</strong>作为一次性协商结算金额。9月7日，异议人代理律师转述对方反馈，称申请执行人同意按上述金额和解，但不承担执行费用。
+        </p>
+
+        <p class="editable-content" style="font-size: 16px; margin-top: 10px; margin-bottom: 6px;">
+            <strong>2. 2026年9月9日至9月16日：协商具体办理方案并寻求执行法院指导</strong>
+        </p>
+
+        <p class="editable-content">
+            9月9日，异议人与执行法官沟通执行和解办理程序，拟按当日签署、对账、付款、确认收款并提交《结案申请书》的方式推进。9月10日，异议人代理律师向对方发送办理安排，对方提出其身处杭州、无法到场，并询问能否线上签署。9月11日，异议人将协商情况提交执行法院。9月15日，异议人补交《解封账户申请书》；9月16日，异议人与执行法官再次沟通办理方案。根据异议人的理解，执行法官表示该方案可以按相应方式推进。
+        </p>
+
+        <p class="editable-content" style="font-size: 16px; margin-top: 10px; margin-bottom: 6px;">
+            <strong>3. 2026年9月17日至9月28日：双方在付款与解封顺序及协议条款方面未能达成一致</strong>
+        </p>
+
+        <p class="editable-content">
+            9月17日，异议人代理律师向申请执行人发送执行和解及后续办理事项确认函。9月18日，异议人代理律师转述对方意见，称申请执行人希望先收款、后办理账户解封。异议人随后将履行顺序方面的分歧向执行法院反映，并请求指导。9月24日，异议人代理律师再次发送正式函件，明确和解金额及办理方案；9月28日，对方提出增加违约责任及保密条款。最终，双方未能就协议内容及具体履行安排达成一致，执行和解协议未能签署。
+        </p>
+
+        <p class="editable-content" style="font-size: 16px; margin-top: 10px; margin-bottom: 6px;">
+            <strong>4. 2026年10月16日至10月19日：补充提交协商材料，执行法官明确告知可通过立案窗口提出执行异议</strong>
+        </p>
+
+        <p class="editable-content">
+            10月16日，异议人向执行法院补充提交近期协商情况及相关材料。10月19日，异议人与执行法官沟通时，执行法官明确告知，如对本案执行金额存在异议，可以通过法院一楼立案窗口提交执行异议申请。
+        </p> 
+
+     <p class="editable-content">
+    <strong>综上，</strong>异议人自收到执行通知书以来，持续积极与申请执行人方面协商本案执行事项。双方曾就<strong>人民币40,138.26元</strong>的一次性结算金额进行实质性沟通，申请执行人方面亦曾反馈同意按该金额和解。此后，双方继续协商协议签署、账户解封、款项支付及结案手续等具体办理事项，但因执行费用承担、付款与账户解封的先后顺序及协议条款等问题未能达成一致，最终未能签署执行和解协议。
+</p>
+
+    </section>
+
+
+    <div class="page-footer">
+        <span></span>
+        <span class="page-no">05</span>
+    </div>
+
+</section> 
+
+
+
+
+<!-- =========================================================
+     PAGE 06
+     事实与理由总结
+     法院名称及两名异议人签署
+     ========================================================= -->
+
+<section class="page">
+
+    <div class="legal-header">
+        <div class="legal-header-top">
+            <span></span>
+        </div>
+    </div>
+
+    <section class="section">
+
+   
+
+<p class="editable-content">
+    鉴于执行和解签署、结款与结案未能达成，且异议人已根据执行法官的指引补充提交相关材料，现请求人民法院依法审查本案执行事项，结合生效法律文书、实际付款凭证、对账材料及双方往来函件、沟通记录，核实本案执行金额及已付款项的处理情况，并依法明确相关执行事项的处理依据，使本案争议能够通过法定程序得到妥善解决，维护异议人的合法权益。
+</p>
+
+      
+    </section>
+
+    <section class="section signature-section">
+
+        <div class="court-closing">
+            <p class="editable-content">此致</p>
+            <p class="court-name editable-content">南山人民法院</p>
+        </div>
+
+
+
+<div class="signature-company editable-content">
+    异议人签署
+</div> 
+
+        <div class="signature-block">
+
+            <div class="signature-company editable-content">
+                异议人一：
+            </div>
+
+            <div class="signature-line editable-content">
+                签字：____________________
+            </div>
+
+            <div class="signature-date editable-content">
+                日期：______年______月______日
+            </div>
+
+        </div>
+
+        <div class="signature-gap"></div>
+
+        <div class="signature-block">
+
+            <div class="signature-company editable-content">
+                异议人二：
+            </div>
+
+            <div class="signature-line editable-content">
+                签字：____________________
+            </div>
+
+            <div class="signature-date editable-content">
+                日期：______年______月______日
+            </div>
+
+        </div>
+
+        <div class="closing editable-content">
+            （以下无正文）
+        </div>
+
+    </section>
+
+    <div class="page-footer">
+        <span></span>
+        <span class="page-no">06</span>
+    </div>
+
+</section>
+
+
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script>
+
+const STORAGE_KEY =
+    "executionSettlementAgreement2026";
+
+const EDITABLE_SELECTOR =
+    ".editable-content";
+
+let editMode = false;
+
+
+/* =========================================================
+   01. 编辑模式
+   ========================================================= */
+
+function toggleEditMode() {
+
+    editMode = !editMode;
+
+    document.body.classList.toggle(
+        "editable-mode",
+        editMode
+    );
+
+    const editableElements =
+        document.querySelectorAll(
+            EDITABLE_SELECTOR
+        );
+
+    editableElements.forEach(function (element) {
+
+        element.contentEditable =
+            editMode ? "true" : "false";
+
+        element.spellcheck = false;
+
+    });
+
+    const status =
+        document.getElementById(
+            "editorStatus"
+        );
+
+    if (status) {
+
+        status.textContent =
+            editMode
+                ? "编辑模式：开启"
+                : "编辑模式：关闭";
+    }
+
+    const button =
+        document.querySelector(
+            ".editor-button.primary"
+        );
+
+    if (button) {
+
+        button.textContent =
+            editMode
+                ? "✓ 完成编辑"
+                : "✏ 编辑";
+    }
+}
+
+
+/* =========================================================
+   02. 获取可编辑内容
+   ========================================================= */
+
+function collectEditableContent() {
+
+    const elements =
+        document.querySelectorAll(
+            EDITABLE_SELECTOR
+        );
+
+    const content = [];
+
+    elements.forEach(function (element, index) {
+
+        content.push({
+
+            index: index,
+
+            html:
+                element.innerHTML
+
+        });
+
+    });
+
+    return content;
+}
+
+
+/* =========================================================
+   03. 保存
+   ========================================================= */
+
+function saveDocument() {
+
+    try {
+
+        const data =
+            collectEditableContent();
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(data)
+        );
+
+        showStatus("已保存");
+
+    } catch (error) {
+
+        console.error(
+            "保存失败：",
+            error
+        );
+
+        showStatus("保存失败");
+    }
+}
+
+
+/* =========================================================
+   04. 恢复
+   ========================================================= */
+
+function restoreDocument() {
+
+    const saved =
+        localStorage.getItem(
+            STORAGE_KEY
+        );
+
+    if (!saved) {
+
+        showStatus(
+            "暂无保存内容"
+        );
+
+        return;
+    }
+
+    try {
+
+        const data =
+            JSON.parse(saved);
+
+        const elements =
+            document.querySelectorAll(
+                EDITABLE_SELECTOR
+            );
+
+        data.forEach(function (item) {
+
+            if (
+                elements[item.index] &&
+                typeof item.html === "string"
+            ) {
+
+                elements[item.index].innerHTML =
+                    item.html;
+            }
+
+        });
+
+        showStatus("已恢复");
+
+    } catch (error) {
+
+        console.error(
+            "恢复失败：",
+            error
+        );
+
+        showStatus("恢复失败");
+    }
+}
+
+
+/* =========================================================
+   05. 状态提示
+   ========================================================= */
+
+function showStatus(message) {
+
+    const status =
+        document.getElementById(
+            "editorStatus"
+        );
+
+    if (!status) {
+        return;
+    }
+
+    const original =
+        editMode
+            ? "编辑模式：开启"
+            : "编辑模式：关闭";
+
+    status.textContent =
+        message;
+
+    window.clearTimeout(
+        showStatus.timer
+    );
+
+    showStatus.timer =
+        window.setTimeout(
+            function () {
+
+                status.textContent =
+                    original;
+
+            },
+            1600
+        );
+}
+
+
+/* =========================================================
+   06. 打印
+   ========================================================= */
+
+function printDocument() {
+
+    if (editMode) {
+        toggleEditMode();
+    }
+
+    window.setTimeout(
+        function () {
+
+            window.print();
+
+        },
+        80
+    );
+}
+
+
+/* =========================================================
+   07. 页面加载
+   ========================================================= */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        editMode = false;
+
+        document.body.classList.remove(
+            "editable-mode"
+        );
+
+        const elements =
+            document.querySelectorAll(
+                EDITABLE_SELECTOR
+            );
+
+        elements.forEach(function (element) {
+
+            element.contentEditable =
+                "false";
+
+            element.spellcheck = false;
+
+        });
+
+        const saved =
+            localStorage.getItem(
+                STORAGE_KEY
+            );
+
+        if (!saved) {
+            return;
+        }
+
+        try {
+
+            const data =
+                JSON.parse(saved);
+
+            data.forEach(function (item) {
+
+                if (
+                    elements[item.index] &&
+                    typeof item.html === "string"
+                ) {
+
+                    elements[item.index].innerHTML =
+                        item.html;
+                }
+
+            });
+
+        } catch (error) {
+
+            console.warn(
+                "自动恢复失败：",
+                error
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   08. 打印前
+   ========================================================= */
+
+window.addEventListener(
+    "beforeprint",
+    function () {
+
+        document.body.classList.remove(
+            "editable-mode"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   09. 打印后
+   ========================================================= */
+
+window.addEventListener(
+    "afterprint",
+    function () {
+
+        document.body.classList.remove(
+            "editable-mode"
+        );
+
+        editMode = false;
+
+        const button =
+            document.querySelector(
+                ".editor-button.primary"
+            );
+
+        if (button) {
+
+            button.textContent =
+                "✏ 编辑";
+        }
+
+        const status =
+            document.getElementById(
+                "editorStatus"
+            );
+
+        if (status) {
+
+            status.textContent =
+                "编辑模式：关闭";
+        }
+
+    }
+);
+
+</script>
+
+
+
+</body>
+
+</html>          
